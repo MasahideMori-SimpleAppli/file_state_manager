@@ -9,7 +9,7 @@ This package is not intended for tracking detailed change history.
 Built for applications that are complex and potentially subject to high volumes of data changes.
 
 ## Usage
-Please check out the Examples tab.
+Please check out the Examples tab in pub.dev.
 
 ## Support
 Basically no support.  

@@ -97,5 +97,43 @@ void main() {
           (fsm.undo()! as ExampleClass).child.message == "Second State", true);
       expect(fsm.canUndo(), false);
     });
+
+    test('History restore test', () {
+      // Undo, Redo.
+      final saveFile = ExampleClass(0, ExampleClassChild("First State"));
+      final fsm = FileStateManager(saveFile, stackSize: 30);
+      saveFile.child.message = "Second State";
+      fsm.push(saveFile);
+
+      // Save and restore the entire history.
+      // Convert to map
+      List<Map<String, dynamic>> history = [];
+      for (CloneableFile i in fsm.getStack()) {
+        history.add((i as ExampleClass).toDict());
+      }
+      // Restore from map
+      List<ExampleClass> restoredHistory = [];
+      for (Map<String, dynamic> i in history) {
+        restoredHistory.add(ExampleClass.fromDict(i));
+      }
+      final restoredFSM =
+          FileStateManager(restoredHistory.removeAt(0), stackSize: 30);
+      for (ExampleClass i in restoredHistory) {
+        restoredFSM.push(i);
+      }
+
+      // Check file
+      ExampleClass restoredNowState = restoredFSM.now() as ExampleClass;
+      // Second State
+      expect(restoredNowState.child.message == "Second State", true);
+      expect(restoredFSM.canUndo(), true);
+      if (restoredFSM.canUndo()) {
+        // First State
+        expect(
+            (restoredFSM.undo()! as ExampleClass).child.message ==
+                "First State",
+            true);
+      }
+    });
   });
 }

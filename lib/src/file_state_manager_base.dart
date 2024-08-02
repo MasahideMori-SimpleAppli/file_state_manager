@@ -96,4 +96,22 @@ class FileStateManager {
       return null;
     }
   }
+
+  /// (en) Returns the now data.
+  /// A deep copy is performed on the return object before it is returned.
+  ///
+  /// (ja) 現在のデータを返します。
+  /// 返されるオブジェクトはディープコピーが実行されてから返却されます。
+  CloneableFile? now() {
+    return _urStack[_nowIndex].clone();
+  }
+
+  /// (en)　Returns a reference to the stack maintained by this class.
+  /// This can be useful if you want to save the entire history.
+  ///
+  /// (ja) このクラスで保持しているスタックの参照を返します。
+  /// これは履歴全体を保存したいような場合に利用できます。
+  List<CloneableFile> getStack() {
+    return _urStack;
+  }
 }

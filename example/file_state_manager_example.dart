@@ -43,8 +43,9 @@ class ExampleClassChild extends CloneableFile {
 }
 
 void main() {
+  // Undo, Redo.
   final saveFile = ExampleClass(0, ExampleClassChild("First State"));
-  final fsm = FileStateManager(saveFile, stackSize: null);
+  final fsm = FileStateManager(saveFile, stackSize: 30);
   saveFile.child.message = "Second State";
   fsm.push(saveFile);
   if (fsm.canUndo()) {
@@ -54,5 +55,31 @@ void main() {
   if (fsm.canRedo()) {
     // Second State
     print((fsm.redo()! as ExampleClass).child.message);
+  }
+
+  // Save and restore the entire history.
+  // Convert to map
+  List<Map<String, dynamic>> history = [];
+  for (CloneableFile i in fsm.getStack()) {
+    history.add((i as ExampleClass).toDict());
+  }
+  // Restore from map
+  List<ExampleClass> restoredHistory = [];
+  for (Map<String, dynamic> i in history) {
+    restoredHistory.add(ExampleClass.fromDict(i));
+  }
+  final restoredFSM =
+      FileStateManager(restoredHistory.removeAt(0), stackSize: 30);
+  for (ExampleClass i in restoredHistory) {
+    restoredFSM.push(i);
+  }
+
+  // Check file
+  ExampleClass restoredNowState = restoredFSM.now() as ExampleClass;
+  // Second State
+  print(restoredNowState.child.message);
+  if (restoredFSM.canUndo()) {
+    // First State
+    print((restoredFSM.undo()! as ExampleClass).child.message);
   }
 }
