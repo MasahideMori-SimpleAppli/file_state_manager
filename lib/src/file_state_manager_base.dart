@@ -40,11 +40,13 @@ class FileStateManager {
   /// For example, running it in onPanEnd will make the app appear to run more
   /// smoothly.
   /// If enableDiffCheck is true, pushing the non changed data will have no effect.
+  /// After skipNextPush is called, the first push is disabled.
   ///
   /// (ja) 変更が加えられた要素を追加します。
   /// 処理の重いディープコピーが発生するので、基本的にはユーザーの操作完了時に実行してください。
   /// 例えば、onPanEndなどで実行すると見かけ上のアプリの動作がスムーズになります。
   /// enableDiffCheckがtrueの場合、変更の無いデータをpushしても何も起こりません。
+  /// skipNextPushが呼び出された後の、１回目のpushは無効化されます。
   ///
   /// * [f] : Data you want to include in the management.
   /// It will be cloned and stored internally.

@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Added explanation of the push method of the FileStateManager class.
+
 ## 1.1.1
 
 * Fixed a bug caused by forgetting to reset the skipNext flag.
