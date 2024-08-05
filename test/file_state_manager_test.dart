@@ -21,6 +21,20 @@ class ExampleClass extends CloneableFile {
   Map<String, dynamic> toDict() {
     return {"count": count, "child": child.toDict()};
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is ExampleClass) {
+      return count == other.count && child == other.child;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([count, child]);
+  }
 }
 
 class ExampleClassChild extends CloneableFile {
@@ -40,6 +54,20 @@ class ExampleClassChild extends CloneableFile {
   @override
   Map<String, dynamic> toDict() {
     return {"message": message};
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is ExampleClassChild) {
+      return message == other.message;
+    } else {
+      return false;
+    }
+  }
+
+  @override
+  int get hashCode {
+    return Object.hashAll([message]);
   }
 }
 
@@ -99,7 +127,6 @@ void main() {
     });
 
     test('History restore test', () {
-      // Undo, Redo.
       final saveFile = ExampleClass(0, ExampleClassChild("First State"));
       final fsm = FileStateManager(saveFile, stackSize: 30);
       saveFile.child.message = "Second State";
@@ -134,6 +161,50 @@ void main() {
                 "First State",
             true);
       }
+    });
+
+    test('enableDiffCheck test', () {
+      // non enabled test
+      final saveFile1 = ExampleClass(0, ExampleClassChild("First State"));
+      final saveFile1Clone = saveFile1.clone();
+      expect(saveFile1.hashCode == saveFile1Clone.hashCode, true);
+      expect(saveFile1 == saveFile1Clone, true);
+      final fsm1 = FileStateManager(saveFile1, stackSize: 30);
+      saveFile1.child.message = "Second State";
+      expect(saveFile1.hashCode == saveFile1Clone.hashCode, false);
+      expect(saveFile1 == saveFile1Clone, false);
+      fsm1.push(saveFile1);
+      // same params object push
+      final preIndex1 = fsm1.nowIndex();
+      // Push without changes
+      fsm1.push(saveFile1);
+      expect(preIndex1 == fsm1.nowIndex(), false);
+      // Push with changes
+      saveFile1.child.message = "Third State";
+      fsm1.push(saveFile1);
+      expect(preIndex1 == fsm1.nowIndex(), false);
+
+      // enabled test
+      final saveFile2 = ExampleClass(0, ExampleClassChild("First State"));
+      final fsm2 =
+          FileStateManager(saveFile2, stackSize: 30, enableDiffCheck: true);
+      saveFile2.child.message = "Second State";
+      fsm2.push(saveFile2);
+      // same params object push (invalid)
+      final int preIndex2 = fsm2.nowIndex();
+      // Push without changes
+      fsm2.push(saveFile2);
+      expect(preIndex2 == fsm2.nowIndex(), true);
+      // Push with changes
+      saveFile2.child.message = "Third State";
+      fsm2.push(saveFile2);
+      expect(preIndex2 == fsm2.nowIndex(), false);
+
+      // Undo, Redo check
+      expect(
+          (fsm2.undo() as ExampleClass).child.message == "Second State", true);
+      expect(
+          (fsm2.redo() as ExampleClass).child.message == "Third State", true);
     });
   });
 }

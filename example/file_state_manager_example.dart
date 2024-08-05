@@ -20,6 +20,22 @@ class ExampleClass extends CloneableFile {
   Map<String, dynamic> toDict() {
     return {"count": count, "child": child.toDict()};
   }
+
+  // Required if you want to set enableDiffCheck param to true.
+  @override
+  bool operator ==(Object other) {
+    if (other is ExampleClass) {
+      return count == other.count && child == other.child;
+    } else {
+      return false;
+    }
+  }
+
+  // Required if you want to set enableDiffCheck param to true.
+  @override
+  int get hashCode {
+    return Object.hashAll([count, child]);
+  }
 }
 
 class ExampleClassChild extends CloneableFile {
@@ -40,12 +56,29 @@ class ExampleClassChild extends CloneableFile {
   Map<String, dynamic> toDict() {
     return {"message": message};
   }
+
+  // Required if you want to set enableDiffCheck param to true.
+  @override
+  bool operator ==(Object other) {
+    if (other is ExampleClassChild) {
+      return message == other.message;
+    } else {
+      return false;
+    }
+  }
+
+  // Required if you want to set enableDiffCheck param to true.
+  @override
+  int get hashCode {
+    return Object.hashAll([message]);
+  }
 }
 
 void main() {
   // Undo, Redo.
   final saveFile = ExampleClass(0, ExampleClassChild("First State"));
-  final fsm = FileStateManager(saveFile, stackSize: 30);
+  // Also enableDiffCheck param to true.
+  final fsm = FileStateManager(saveFile, stackSize: 30, enableDiffCheck: true);
   saveFile.child.message = "Second State";
   fsm.push(saveFile);
   if (fsm.canUndo()) {
@@ -68,8 +101,8 @@ void main() {
   for (Map<String, dynamic> i in history) {
     restoredHistory.add(ExampleClass.fromDict(i));
   }
-  final restoredFSM =
-      FileStateManager(restoredHistory.removeAt(0), stackSize: 30);
+  final restoredFSM = FileStateManager(restoredHistory.removeAt(0),
+      stackSize: 30, enableDiffCheck: true);
   for (ExampleClass i in restoredHistory) {
     restoredFSM.push(i);
   }
@@ -82,4 +115,23 @@ void main() {
     // First State
     print((restoredFSM.undo()! as ExampleClass).child.message);
   }
+  // 0
+  print(restoredFSM.nowIndex());
+  // Push an object with the same parameters (invalid because diff checking is enabled)
+  saveFile.child.message = "First State";
+  restoredFSM.push(saveFile);
+  // 0
+  print(restoredFSM.nowIndex());
+
+  // You can also explicitly disable the next push.
+  restoredFSM.skipNextPush();
+  saveFile.child.message = "Second State";
+  // Invalid push
+  restoredFSM.push(saveFile);
+  // 0
+  print(restoredFSM.nowIndex());
+  // Valid push
+  restoredFSM.push(saveFile);
+  // 1
+  print(restoredFSM.nowIndex());
 }

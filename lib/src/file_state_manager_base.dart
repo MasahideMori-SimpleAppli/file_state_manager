@@ -13,6 +13,8 @@ class FileStateManager {
   final List<CloneableFile> _urStack = [];
   int _nowIndex = -1;
   final int? stackSize;
+  final bool enableDiffCheck;
+  bool _skipNext = false;
 
   /// * [f] : A managed file.
   /// This can be either a new empty file created by your application,
@@ -22,7 +24,13 @@ class FileStateManager {
   /// possible. Specifying null will make it infinite,
   /// but considering memory consumption,
   /// I recommend setting it to an optimal finite value.
-  FileStateManager(CloneableFile f, {required this.stackSize}) {
+  /// * [enableDiffCheck] : The initial value is false.
+  /// If true, When you call push, an equals comparison is done to see if
+  /// a change occurred.
+  /// If you enable this, you must also override the == operator and hashCode
+  /// of the managed classes of this manager.
+  FileStateManager(CloneableFile f,
+      {required this.stackSize, this.enableDiffCheck = false}) {
     push(f);
   }
 
@@ -31,12 +39,26 @@ class FileStateManager {
   /// so it should generally be run when the user has completed their operation.
   /// For example, running it in onPanEnd will make the app appear to run more
   /// smoothly.
+  /// If enableDiffCheck is true, pushing the non changed data will have no effect.
   ///
   /// (ja) 変更が加えられた要素を追加します。
   /// 処理の重いディープコピーが発生するので、基本的にはユーザーの操作完了時に実行してください。
   /// 例えば、onPanEndなどで実行すると見かけ上のアプリの動作がスムーズになります。
-  /// * [f] : 管理に含めたいデータ。内部でcloneされて保持されます。
+  /// enableDiffCheckがtrueの場合、変更の無いデータをpushしても何も起こりません。
+  ///
+  /// * [f] : Data you want to include in the management.
+  /// It will be cloned and stored internally.
   void push(CloneableFile f) {
+    if (_skipNext) {
+      return;
+    }
+    if (enableDiffCheck) {
+      if (_urStack.isNotEmpty) {
+        if (_urStack[_nowIndex] == f) {
+          return;
+        }
+      }
+    }
     final clonedData = f.clone();
     // スタック内に収まるように調整。
     if (stackSize == null) {
@@ -53,6 +75,17 @@ class FileStateManager {
     for (int i = _urStack.length - 1; i > _nowIndex; i--) {
       _urStack.removeAt(i);
     }
+  }
+
+  /// (en) Calling this will disable the next push.
+  /// This can be used as an alternative to enableDiffCheck parameter
+  /// when dealing with large files where comparisons are expensive.
+  ///
+  /// (ja) これを呼び出すと、次回のpushが無効化されます。
+  /// これは比較にコストのかかる大きなファイルを扱う場合、
+  /// enableDiffCheckパラメータの代替として利用できます。
+  void skipNextPush() {
+    _skipNext = true;
   }
 
   /// (en) Returns true only if Undo is possible.
@@ -104,6 +137,13 @@ class FileStateManager {
   /// 返されるオブジェクトはディープコピーが実行されてから返却されます。
   CloneableFile? now() {
     return _urStack[_nowIndex].clone();
+  }
+
+  /// (en) Returns the current index into the stack.
+  ///
+  /// (ja) 現在スタックのどこを参照しているのかという、インデックスを返します。
+  int nowIndex() {
+    return _nowIndex;
   }
 
   /// (en)　Returns a reference to the stack maintained by this class.
