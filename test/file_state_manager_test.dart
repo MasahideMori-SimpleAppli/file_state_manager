@@ -206,5 +206,20 @@ void main() {
       expect(
           (fsm2.redo() as ExampleClass).child.message == "Third State", true);
     });
+
+    test('skip next test', () {
+      final saveFile1 = ExampleClass(0, ExampleClassChild("First State"));
+      final fsm1 = FileStateManager(saveFile1, stackSize: 30);
+      expect(fsm1.nowIndex() == 0, true);
+      saveFile1.child.message = "Second State";
+      fsm1.push(saveFile1);
+      expect(fsm1.nowIndex() == 1, true);
+      saveFile1.child.message = "Third State";
+      fsm1.skipNextPush();
+      fsm1.push(saveFile1);
+      expect(fsm1.nowIndex() == 1, true);
+      fsm1.push(saveFile1);
+      expect(fsm1.nowIndex() == 2, true);
+    });
   });
 }

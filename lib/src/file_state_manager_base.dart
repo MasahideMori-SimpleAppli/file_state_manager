@@ -50,6 +50,7 @@ class FileStateManager {
   /// It will be cloned and stored internally.
   void push(CloneableFile f) {
     if (_skipNext) {
+      _skipNext = false;
       return;
     }
     if (enableDiffCheck) {
