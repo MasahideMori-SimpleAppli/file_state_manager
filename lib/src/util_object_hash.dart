@@ -23,7 +23,7 @@ class UtilObjectHash {
         r = 37 * r + key.hashCode;
         r = 37 * r + calcList(value);
       } else if (value is Set) {
-        r = 37 * r + key.hashCode * 37;
+        r = 37 * r + key.hashCode;
         r = 37 * r + calcSet(value);
       } else {
         r = 37 * r + key.hashCode;
