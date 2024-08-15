@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Added UtilObjectHash class. This utility can be used to calculate hash codes for Maps, Lists, etc.
+
 ## 1.1.2
 
 * Added explanation of the push method of the FileStateManager class.

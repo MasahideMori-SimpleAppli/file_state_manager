@@ -222,4 +222,84 @@ void main() {
       expect(fsm1.nowIndex() == 2, true);
     });
   });
+
+  group('Util test', () {
+    test('UtilObjectHash test', () {
+      Map<String, String> m1 = {"a": "a"};
+      Map<String, String> m2 = {"a": "a"};
+      Map<String, String> m3 = {"a": "b"};
+      Map<String, String> m4 = {"b": "a"};
+      Map<String, String> m5 = {"a": "a", "b": "b"};
+      expect(UtilObjectHash.calcMap(m1) == UtilObjectHash.calcMap(m2), true);
+      expect(UtilObjectHash.calcMap(m1) == UtilObjectHash.calcMap(m3), false);
+      expect(UtilObjectHash.calcMap(m1) == UtilObjectHash.calcMap(m4), false);
+      expect(UtilObjectHash.calcMap(m1) == UtilObjectHash.calcMap(m5), false);
+      Map<String, Map<String, int>> m6 = {
+        "a": {"a": 1}
+      };
+      Map<String, Map<String, int>> m7 = {
+        "a": {"a": 1}
+      };
+      Map<String, Map<String, int>> m8 = {
+        "a": {"a": 2}
+      };
+      Map<String, Map<String, int>> m9 = {
+        "b": {"a": 1}
+      };
+      Map<String, Map<String, int>> m10 = {
+        "a": {"a": 1},
+        "b": {"a": 1}
+      };
+      expect(UtilObjectHash.calcMap(m6) == UtilObjectHash.calcMap(m7), true);
+      expect(UtilObjectHash.calcMap(m6) == UtilObjectHash.calcMap(m8), false);
+      expect(UtilObjectHash.calcMap(m6) == UtilObjectHash.calcMap(m9), false);
+      expect(UtilObjectHash.calcMap(m6) == UtilObjectHash.calcMap(m10), false);
+      List<String> l1 = ["a"];
+      List<String> l2 = ["a"];
+      List<String> l3 = ["b"];
+      List<String> l4 = ["a", "b"];
+      expect(UtilObjectHash.calcList(l1) == UtilObjectHash.calcList(l2), true);
+      expect(UtilObjectHash.calcList(l1) == UtilObjectHash.calcList(l3), false);
+      expect(UtilObjectHash.calcList(l1) == UtilObjectHash.calcList(l4), false);
+      List<List<int>> l6 = [
+        [1]
+      ];
+      List<List<int>> l7 = [
+        [1]
+      ];
+      List<List<int>> l8 = [
+        [2]
+      ];
+      List<List<int>> l9 = [
+        [1],
+        [1]
+      ];
+      expect(UtilObjectHash.calcList(l6) == UtilObjectHash.calcList(l7), true);
+      expect(UtilObjectHash.calcList(l6) == UtilObjectHash.calcList(l8), false);
+      expect(UtilObjectHash.calcList(l6) == UtilObjectHash.calcList(l9), false);
+      Set<String> s1 = {"a"};
+      Set<String> s2 = {"a"};
+      Set<String> s3 = {"b"};
+      Set<String> s4 = {"a", "b"};
+      expect(UtilObjectHash.calcSet(s1) == UtilObjectHash.calcSet(s2), true);
+      expect(UtilObjectHash.calcSet(s1) == UtilObjectHash.calcSet(s3), false);
+      expect(UtilObjectHash.calcSet(s1) == UtilObjectHash.calcSet(s4), false);
+      Set<Set<int>> s6 = {
+        {1}
+      };
+      Set<Set<int>> s7 = {
+        {1}
+      };
+      Set<Set<int>> s8 = {
+        {2}
+      };
+      Set<Set<int>> s9 = {
+        {1},
+        {1}
+      };
+      expect(UtilObjectHash.calcSet(s6) == UtilObjectHash.calcSet(s7), true);
+      expect(UtilObjectHash.calcSet(s6) == UtilObjectHash.calcSet(s8), false);
+      expect(UtilObjectHash.calcSet(s6) == UtilObjectHash.calcSet(s9), false);
+    });
+  });
 }
