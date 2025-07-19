@@ -1,3 +1,8 @@
+## 2.0.0
+
+* This package has been changed to a Dart package and no longer depends on Flutter.
+* In UtilObjectHash, functions related to TextEditingController have been removed.
+
 ## 1.2.0
 
 * Added UtilObjectHash class. This utility can be used to calculate hash codes for Maps, Lists, etc.

@@ -1,5 +1,5 @@
 import 'package:file_state_manager/file_state_manager.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 class ExampleClass extends CloneableFile {
   late int count;

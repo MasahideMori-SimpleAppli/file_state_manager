@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 /// (en) This is a utility for object hash calculations.
 /// This makes it easy to calculate hashes, for example
 /// if you want to enable enableDiffCheck flag in FileStateManager.
@@ -72,20 +70,6 @@ class UtilObjectHash {
         r = 37 * r + (i?.hashCode ?? 0);
       }
     }
-    return r;
-  }
-
-  /// (en) Calculate hash code for mapped TextEditingController by
-  /// it's include text.
-  ///
-  /// (ja) マップされたTextEditingControllerのハッシュコードを、
-  /// 含まれるテキストによって計算します。
-  static int calcMappedTEC(Map<String, TextEditingController> m) {
-    int r = 17;
-    m.forEach((String key, TextEditingController value) {
-      r = 37 * r + key.hashCode;
-      r = 37 * r + value.text.hashCode;
-    });
     return r;
   }
 }
