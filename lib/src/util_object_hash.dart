@@ -12,23 +12,10 @@ class UtilObjectHash {
   /// (ja) Mapのハッシュコードを計算します。
   /// Map, List, Setのネストに対応しています。
   static int calcMap(Map<dynamic, dynamic> m) {
-    int r = 17;
-    m.forEach((dynamic key, dynamic value) {
-      if (value is Map) {
-        r = 37 * r + key.hashCode;
-        r = 37 * r + calcMap(value);
-      } else if (value is List) {
-        r = 37 * r + key.hashCode;
-        r = 37 * r + calcList(value);
-      } else if (value is Set) {
-        r = 37 * r + key.hashCode;
-        r = 37 * r + calcSet(value);
-      } else {
-        r = 37 * r + key.hashCode;
-        r = 37 * r + (value?.hashCode ?? 0);
-      }
-    });
-    return r;
+    return Object.hashAllUnordered(m.entries.map((e) {
+      // キーと値のペア自体のハッシュは順序を固定して計算
+      return Object.hash(e.key?.hashCode ?? 0, _deepHashCode(e.value));
+    }));
   }
 
   /// (en) Calculate hash code for list.
@@ -37,19 +24,7 @@ class UtilObjectHash {
   /// (ja) Listのハッシュコードを計算します。
   /// Map, List, Setのネストに対応しています。
   static int calcList(List<dynamic> list) {
-    int r = 17;
-    for (int i = 0; i < list.length; i++) {
-      if (list[i] is Map) {
-        r = 37 * r + (calcMap(list[i]) ^ i);
-      } else if (list[i] is List) {
-        r = 37 * r + (calcList(list[i]) ^ i);
-      } else if (list[i] is Set) {
-        r = 37 * r + (calcSet(list[i]) ^ i);
-      } else {
-        r = 37 * r + ((list[i]?.hashCode ?? 0) ^ i);
-      }
-    }
-    return r;
+    return Object.hashAll(list.map((e) => _deepHashCode(e)));
   }
 
   /// (en) Calculate hash code for set.
@@ -58,18 +33,14 @@ class UtilObjectHash {
   /// (ja) Setのハッシュコードを計算します。
   /// Map, List, Setのネストに対応しています。
   static int calcSet(Set<dynamic> s) {
-    int r = 17;
-    for (dynamic i in s) {
-      if (i is Map) {
-        r = 37 * r + calcMap(i);
-      } else if (i is List) {
-        r = 37 * r + calcList(i);
-      } else if (i is Set) {
-        r = 37 * r + calcSet(i);
-      } else {
-        r = 37 * r + (i?.hashCode ?? 0);
-      }
-    }
-    return r;
+    return Object.hashAllUnordered(s.map((e) => _deepHashCode(e)));
+  }
+
+  /// 再帰的にハッシュを計算するためのヘルパーメソッド
+  static int _deepHashCode(dynamic value) {
+    if (value is Map) return calcMap(value);
+    if (value is List) return calcList(value);
+    if (value is Set) return calcSet(value);
+    return value?.hashCode ?? 0;
   }
 }

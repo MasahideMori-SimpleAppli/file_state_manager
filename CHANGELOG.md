@@ -1,3 +1,7 @@
+## 3.0.0
+
+* Improved UtilObjectHash to ensure order-independent hashing for Map/Set and consistent hashing with deep equality.
+
 ## 2.0.0
 
 * This package has been changed to a Dart package and no longer depends on Flutter.
