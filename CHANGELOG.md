@@ -1,3 +1,8 @@
+## 3.0.1
+
+* Aligned the return type of `FileStateManager.now()` with its actual behavior.
+  It now returns `CloneableFile` instead of `CloneableFile?`.
+
 ## 3.0.0
 
 * Improved UtilObjectHash to ensure order-independent hashing for Map/Set and consistent hashing with deep equality.

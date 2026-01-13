@@ -138,7 +138,7 @@ class FileStateManager {
   ///
   /// (ja) 現在のデータを返します。
   /// 返されるオブジェクトはディープコピーが実行されてから返却されます。
-  CloneableFile? now() {
+  CloneableFile now() {
     return _urStack[_nowIndex].clone();
   }
 
